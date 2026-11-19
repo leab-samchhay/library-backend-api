@@ -20,7 +20,8 @@ echo "🗄️ 4. Running Database Migrations..."
 docker compose exec -T app php artisan migrate --force
 
 # 5. Optimize configuration and routes
-echo "⚡ 5. Optimizing configuration & route caching..."
+echo "⚡ 5. Ensuring storage symlink, optimizing configuration & route caching..."
+docker compose exec -T app php artisan storage:link --force || true
 docker compose exec -T app php artisan config:cache
 docker compose exec -T app php artisan route:cache
 
