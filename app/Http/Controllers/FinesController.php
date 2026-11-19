@@ -17,7 +17,7 @@ class FinesController extends Controller
         $fines->when($request->search, function ($q, $search) {
             $q->where(function ($subQuery) use ($search) {
                 $subQuery->where('fine_type', 'like', "%{$search}%")
-                         ->orWhere('amount', 'like', "%{$search}%");
+                    ->orWhere('amount', 'like', "%{$search}%");
             });
         });
 
@@ -27,7 +27,7 @@ class FinesController extends Controller
 
         return response()->json([
             'data' => $fines->latest()->paginate($request->per_page ?? 10),
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -40,14 +40,14 @@ class FinesController extends Controller
             'return_id' => 'required|integer|exists:book_returns,id',
             'fine_type' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0',
-            'status' => 'nullable|string|max:255'
+            'status' => 'nullable|string|max:255',
         ]);
 
         $fine = Fines::create($validate);
 
         return response()->json([
             'data' => $fine,
-            'message' => 'create success'
+            'message' => 'create success',
         ]);
     }
 
@@ -56,11 +56,11 @@ class FinesController extends Controller
      */
     public function show($id)
     {
-        $fine = Fines::with(['loanDetail'])->findOrFail($id);
+        $fine = Fines::with(['return.loanDetail'])->findOrFail($id);
 
         return response()->json([
             'data' => $fine,
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -75,14 +75,14 @@ class FinesController extends Controller
             'return_id' => 'required|integer|exists:book_returns,id',
             'fine_type' => 'required|string|max:255',
             'amount' => 'required|numeric|min:0',
-            'status' => 'nullable|string|max:255'
+            'status' => 'nullable|string|max:255',
         ]);
 
         $fine->update($validate);
 
         return response()->json([
             'data' => $fine,
-            'message' => 'update success'
+            'message' => 'update success',
         ]);
     }
 
@@ -95,7 +95,7 @@ class FinesController extends Controller
         $fine->delete();
 
         return response()->json([
-            'message' => 'delete success'
+            'message' => 'delete success',
         ]);
     }
 }

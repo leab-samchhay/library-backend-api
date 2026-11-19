@@ -11,11 +11,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-use function Illuminate\Support\years;
-
 class DashboardController extends Controller
 {
-    public function monthlyBorrowers(Request $request){
+    public function monthlyBorrowers(Request $request)
+    {
         $report = Loan::select(
             DB::raw('YEAR(loan_date) as year'),
             DB::raw('MONTH(loan_date) as month'),
@@ -23,15 +22,16 @@ class DashboardController extends Controller
             DB::raw('COUNT(id) as total_loans')
 
         )
-        ->groupBy('year','month')
-        ->orderBy('year','asc')
-        ->orderBy('month','asc')
-        ->get();
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get();
 
         $formattedData = $report->map(function ($item) {
-            $monthName = date("M", mktime(0, 0, 0, $item->month, 10)); // បំប្លែងលេខខែ ទៅជាអក្សរ (ឧ. Jan, Feb)
+            $monthName = date('M', mktime(0, 0, 0, $item->month, 10)); // បំប្លែងលេខខែ ទៅជាអក្សរ (ឧ. Jan, Feb)
+
             return [
-                'label' => $monthName . ' ' . $item->year,
+                'label' => $monthName.' '.$item->year,
                 'total_member_borrowers' => $item->total_member_borrowers,
                 'total_loans' => $item->total_loans,
             ];
@@ -39,7 +39,7 @@ class DashboardController extends Controller
 
         return response()->json([
             'data' => $formattedData,
-            'message' => 'Monthly borrowers report generated successfully'
+            'message' => 'Monthly borrowers report generated successfully',
         ]);
     }
 
@@ -61,7 +61,7 @@ class DashboardController extends Controller
 
         // --- Return Info ---
         $booksReturned = BookReturn::count();
-        $membersReturned = Loan::where('status','0')->distinct('member_id')->count('member_id');
+        $membersReturned = Loan::where('status', '0')->distinct('member_id')->count('member_id');
 
         return response()->json([
             'data' => [
@@ -83,9 +83,9 @@ class DashboardController extends Controller
                 'return_info' => [
                     'books_returned' => $booksReturned,
                     'members_returned' => $membersReturned,
-                ]
+                ],
             ],
-            'message' => 'Dashboard summary fetched successfully'
+            'message' => 'Dashboard summary fetched successfully',
         ]);
     }
 
@@ -114,7 +114,7 @@ class DashboardController extends Controller
             foreach ($books as $book) {
                 $children[] = [
                     'x' => $book->title,
-                    'y' => (int) $book->borrow_count
+                    'y' => (int) $book->borrow_count,
                 ];
                 $categoryTotal += $book->borrow_count;
             }
@@ -122,13 +122,13 @@ class DashboardController extends Controller
             $formattedData[] = [
                 'x' => $categoryName,
                 'y' => $categoryTotal,
-                'children' => $children
+                'children' => $children,
             ];
         }
 
         return response()->json([
             'data' => $formattedData,
-            'message' => 'Book borrow report by category generated successfully'
+            'message' => 'Book borrow report by category generated successfully',
         ]);
     }
 }

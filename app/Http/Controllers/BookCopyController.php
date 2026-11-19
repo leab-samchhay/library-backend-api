@@ -13,9 +13,9 @@ class BookCopyController extends Controller
     public function index(Request $request)
     {
         $bookCopy = BookCopy::with('book.category');
-        $bookCopy->when($request->search,function ($q, $search) {
+        $bookCopy->when($request->search, function ($q, $search) {
             $q->where(function ($subQuery) use ($search) {
-                $subQuery->where('barcode',$search);
+                $subQuery->where('barcode', $search);
             });
         });
 
@@ -23,9 +23,9 @@ class BookCopyController extends Controller
             $q->where('book_id', $bookId);
         });
 
-        $bookCopy->when($request->category_name,function ($q, $categoryName) {
-            $q->whereHas('book.category',function ($subQuery) use ($categoryName) {
-                $subQuery->where('name','like', '%'.$categoryName.'%');
+        $bookCopy->when($request->category_name, function ($q, $categoryName) {
+            $q->whereHas('book.category', function ($subQuery) use ($categoryName) {
+                $subQuery->where('category_name', 'like', '%'.$categoryName.'%');
             });
         });
 
@@ -36,8 +36,8 @@ class BookCopyController extends Controller
         });
 
         return response()->json([
-            'data'=>$bookCopy->latest()->paginate($request->per_page ?? 10),
-            'message'=>'get data success'
+            'data' => $bookCopy->latest()->paginate($request->per_page ?? 10),
+            'message' => 'get data success',
         ]);
 
     }
@@ -55,22 +55,22 @@ class BookCopyController extends Controller
      */
     public function store(Request $request)
     {
-        $validate=$request->validate([
-            'book_id'=> 'required|integer|exists:books,id',
-            'barcode'=> 'required|string|max:255|unique:book_copies,barcode',
+        $validate = $request->validate([
+            'book_id' => 'required|integer|exists:books,id',
+            'barcode' => 'required|string|max:255|unique:book_copies,barcode',
             'page_number' => 'nullable|integer',
             'shelf_location' => 'nullable|string|max:255',
             'acquisition_date' => 'nullable|date',
             'price' => 'nullable|numeric',
             'condition' => 'nullable|string|max:255',
-            'status' => 'nullable|string|max:255'
+            'status' => 'nullable|string|max:255',
         ]);
 
         $bookCopy = BookCopy::create($validate);
 
-        return response() ->json([
-            'data'=>$bookCopy,
-            'message' => 'create success'
+        return response()->json([
+            'data' => $bookCopy,
+            'message' => 'create success',
         ]);
     }
 
@@ -80,9 +80,10 @@ class BookCopyController extends Controller
     public function show($id)
     {
         $bookCopy = BookCopy::findOrFail($id);
+
         return response()->json([
             'data' => $bookCopy,
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -100,22 +101,22 @@ class BookCopyController extends Controller
     public function update(Request $request, $id)
     {
         $bookCopy = BookCopy::findOrFail($id);
-        $validate=$request->validate([
-            'book_id'=> 'required|integer|exists:books,id',
-            'barcode'=> 'required|string|max:255|unique:book_copies,barcode,'.$id,
+        $validate = $request->validate([
+            'book_id' => 'required|integer|exists:books,id',
+            'barcode' => 'required|string|max:255|unique:book_copies,barcode,'.$id,
             'page_number' => 'nullable|integer',
             'shelf_location' => 'nullable|string|max:255',
             'acquisition_date' => 'nullable|date',
             'price' => 'nullable|numeric',
             'condition' => 'nullable|string|max:255',
-            'status' => 'nullable|string|max:255'
+            'status' => 'nullable|string|max:255',
         ]);
 
         $bookCopy->update($validate);
 
-        return response() ->json([
-            'data'=>$bookCopy,
-            'message' => 'update success'
+        return response()->json([
+            'data' => $bookCopy,
+            'message' => 'update success',
         ]);
     }
 
@@ -128,7 +129,7 @@ class BookCopyController extends Controller
         $bookCopy->delete();
 
         return response()->json([
-            'message' => 'delete success'
+            'message' => 'delete success',
         ]);
     }
 }

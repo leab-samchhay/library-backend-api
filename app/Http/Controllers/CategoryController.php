@@ -15,16 +15,15 @@ class CategoryController extends Controller
         $category = Category::query();
         $category->when($request->search, function ($q, $search) {
             $q->where(function ($subQuery) use ($search) {
-                $subQuery->where('category_name', 'like', '%' . $search . '%')
-                        ->orWhere('description', 'like', '%' . $search . '%')
-                        ->orWhere('id',$search);
+                $subQuery->where('category_name', 'like', '%'.$search.'%')
+                    ->orWhere('description', 'like', '%'.$search.'%')
+                    ->orWhere('id', $search);
             });
         });
 
-
-        return response() -> json([
-            'data'=>$category->latest()->paginate($request->per_page ?? 10),
-            'message' => "Get data success "
+        return response()->json([
+            'data' => $category->latest()->paginate($request->per_page ?? 10),
+            'message' => 'Get data success ',
         ]);
     }
 
@@ -43,14 +42,14 @@ class CategoryController extends Controller
     {
         $validate = $request->validate([
             'category_name' => 'required|string|max:255',
-            'description'   => 'required|string',
+            'description' => 'required|string',
         ]);
 
         $category = Category::create($validate);
 
         return response()->json([
             'data' => $category,
-            'message' => 'Create success'
+            'message' => 'Create success',
 
         ]);
     }
@@ -61,9 +60,9 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         // $category = Category::findOrFail($category->id);
-        return response() ->json([
+        return response()->json([
             'data' => $category,
-            'message' => "get data success"
+            'message' => 'get data success',
         ]);
     }
 
@@ -83,14 +82,14 @@ class CategoryController extends Controller
         // $category = Category::findOrFail($category->id);
         $validate = $request->validate([
             'category_name' => 'required|string|max:255',
-            'description'   => 'required|string',
+            'description' => 'required|string',
         ]);
 
         $category->update($validate);
 
         return response()->json([
             'data' => $category,
-            'message' => 'update success'
+            'message' => 'update success',
 
         ]);
     }
@@ -102,8 +101,9 @@ class CategoryController extends Controller
     {
         // $category = Category::findOrFail($category->id);
         $category->delete();
-        return response() -> json([
-            'message' => "delete success"
+
+        return response()->json([
+            'message' => 'delete success',
         ]);
     }
 }

@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Permission;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -39,7 +38,9 @@ class PermissionSeeder extends Seeder
         foreach ($modules as $moduleName => $moduleSlug) {
             foreach ($actions as $actionSlug => $actionName) {
                 // Dashboard has limited actions (មានតែ view ប៉ុណ្ណោះ)
-                if ($moduleSlug === 'dashboard' && $actionSlug !== 'view') continue;
+                if ($moduleSlug === 'dashboard' && $actionSlug !== 'view') {
+                    continue;
+                }
 
                 Permission::firstOrCreate(
                     ['slug' => "{$moduleSlug}.{$actionSlug}"],

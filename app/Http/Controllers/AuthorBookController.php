@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AuthorBook;
+use App\Models\Book;
 use Illuminate\Http\Request;
 
 class AuthorBookController extends Controller
@@ -15,22 +15,22 @@ class AuthorBookController extends Controller
         $limit = $request->get('per_page', 10);
         $search = $request->get('search', '');
 
-        $query = \App\Models\Book::with('authors')->has('authors');
+        $query = Book::with('authors')->has('authors');
 
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhereHas('authors', function($q2) use ($search) {
-                      $q2->where('authors_name', 'like', "%{$search}%");
-                  });
+                    ->orWhereHas('authors', function ($q2) use ($search) {
+                        $q2->where('authors_name', 'like', "%{$search}%");
+                    });
             });
         }
 
         $books = $query->paginate($limit);
-        
+
         return response()->json([
             'status' => 'success',
-            'data' => $books
+            'data' => $books,
         ], 200);
     }
 
@@ -42,16 +42,16 @@ class AuthorBookController extends Controller
         $validated = $request->validate([
             'authors_id' => 'required|array',
             'authors_id.*' => 'exists:authors,id',
-            'book_id' => 'required|exists:books,id'
+            'book_id' => 'required|exists:books,id',
         ]);
 
-        $book = \App\Models\Book::findOrFail($validated['book_id']);
+        $book = Book::findOrFail($validated['book_id']);
         $book->authors()->syncWithoutDetaching($validated['authors_id']);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Author Book relationship created successfully',
-            'data' => $book->load('authors')
+            'data' => $book->load('authors'),
         ], 201);
     }
 
@@ -60,14 +60,14 @@ class AuthorBookController extends Controller
      */
     public function show(string $id)
     {
-        $book = \App\Models\Book::with('authors')->findOrFail($id);
-        
+        $book = Book::with('authors')->findOrFail($id);
+
         return response()->json([
             'status' => 'success',
             'data' => [
-                 'book_id' => $book->id,
-                 'authors_id' => $book->authors->pluck('id')->toArray()
-            ]
+                'book_id' => $book->id,
+                'authors_id' => $book->authors->pluck('id')->toArray(),
+            ],
         ], 200);
     }
 
@@ -79,16 +79,16 @@ class AuthorBookController extends Controller
         $validated = $request->validate([
             'authors_id' => 'required|array',
             'authors_id.*' => 'exists:authors,id',
-            'book_id' => 'required|exists:books,id'
+            'book_id' => 'required|exists:books,id',
         ]);
 
-        $book = \App\Models\Book::findOrFail($id);
+        $book = Book::findOrFail($id);
         $book->authors()->sync($validated['authors_id']);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Author Book relationship updated successfully',
-            'data' => $book->load('authors')
+            'data' => $book->load('authors'),
         ], 200);
     }
 
@@ -97,12 +97,12 @@ class AuthorBookController extends Controller
      */
     public function destroy(string $id)
     {
-        $book = \App\Models\Book::findOrFail($id);
+        $book = Book::findOrFail($id);
         $book->authors()->detach();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Author Book relationship deleted successfully'
+            'message' => 'Author Book relationship deleted successfully',
         ], 200);
     }
 }

@@ -18,16 +18,16 @@ class AbaPaywayController extends Controller
             'fine_id' => 'nullable|integer',
         ]);
 
-        $merchantId = env('ABA_PAYWAY_MERCHANT_ID', 'ec438902');
-        $apiKey = env('ABA_PAYWAY_API_KEY', 'fake_api_key_for_testing');
-        $mode = env('ABA_PAYWAY_MODE', 'sandbox');
+        $merchantId = config('services.aba.merchant_id', 'ec438902');
+        $apiKey = config('services.aba.api_key', 'fake_api_key_for_testing');
+        $mode = config('services.aba.mode', 'sandbox');
 
         $reqTime = now()->format('YmdHis');
-        $tranId = 'TXN-' . time();
+        $tranId = 'TXN-'.time();
         $amount = number_format((float) $request->amount, 2, '.', '');
 
         // Generate HMAC-SHA512 Hash signature (ABA PayWay Standard)
-        $strToHash = $reqTime . $merchantId . $tranId . $amount;
+        $strToHash = $reqTime.$merchantId.$tranId.$amount;
         $hash = base64_encode(hash_hmac('sha512', $strToHash, $apiKey, true));
 
         // Format standard KHQR payload string (EMVCo QR standard for Bakong/ABA)
@@ -40,7 +40,7 @@ class AbaPaywayController extends Controller
         // Tag 59: Merchant Name
         // Tag 60: Merchant City
         $khqrString = sprintf(
-            "00020101021229300016abaa.kh.payment0106%s52045999530384054%02d%s5802KH5911BBU LIBRARY6010SIEM REAP62180114%s6304ABCD",
+            '00020101021229300016abaa.kh.payment0106%s52045999530384054%02d%s5802KH5911BBU LIBRARY6010SIEM REAP62180114%s6304ABCD',
             $merchantId,
             strlen($amount),
             $amount,
@@ -60,7 +60,7 @@ class AbaPaywayController extends Controller
                 'qr_string' => $khqrString,
                 'mode' => $mode,
             ],
-            'message' => 'ABA KHQR generated successfully'
+            'message' => 'ABA KHQR generated successfully',
         ]);
     }
 
@@ -74,18 +74,18 @@ class AbaPaywayController extends Controller
         ]);
 
         $tranId = $request->tran_id;
-        $mode = env('ABA_PAYWAY_MODE', 'sandbox');
-        $merchantId = env('ABA_PAYWAY_MERCHANT_ID', 'ec438902');
-        $apiKey = env('ABA_PAYWAY_API_KEY', 'fake_api_key_for_testing');
+        $mode = config('services.aba.mode', 'sandbox');
+        $merchantId = config('services.aba.merchant_id', 'ec438902');
+        $apiKey = config('services.aba.api_key', 'fake_api_key_for_testing');
 
         // If using real Sandbox with valid credentials
         if ($mode === 'sandbox' && $apiKey !== 'fake_api_key_for_testing') {
             try {
                 $reqTime = now()->format('YmdHis');
-                $strToHash = $reqTime . $merchantId . $tranId;
+                $strToHash = $reqTime.$merchantId.$tranId;
                 $hash = base64_encode(hash_hmac('sha512', $strToHash, $apiKey, true));
 
-                $response = Http::post(env('ABA_PAYWAY_CHECK_URL', 'https://checkout-sandbox.payway.com.kh/api/payment-gateway/v1/payments/check-transaction-2'), [
+                $response = Http::post(config('services.aba.check_url', 'https://checkout-sandbox.payway.com.kh/api/payment-gateway/v1/payments/check-transaction-2'), [
                     'req_time' => $reqTime,
                     'merchant_id' => $merchantId,
                     'tran_id' => $tranId,
@@ -94,7 +94,7 @@ class AbaPaywayController extends Controller
 
                 return $response->json();
             } catch (\Exception $e) {
-                Log::error('ABA PayWay check transaction error: ' . $e->getMessage());
+                Log::error('ABA PayWay check transaction error: '.$e->getMessage());
             }
         }
 
@@ -105,8 +105,8 @@ class AbaPaywayController extends Controller
             'data' => [
                 'tran_id' => $tranId,
                 'payment_status' => 'PAID',
-                'payment_method' => 'ABA KHQR'
-            ]
+                'payment_method' => 'ABA KHQR',
+            ],
         ]);
     }
 }

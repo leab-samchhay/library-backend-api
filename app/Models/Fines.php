@@ -8,14 +8,16 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Fines extends Model
 {
     use SoftDeletes;
+
     protected $fillable = [
         'return_id',
         'fine_type',
         'amount',
-        'status'
+        'status',
     ];
 
-    public function return (){
+    public function return()
+    {
         return $this->belongsTo(BookReturn::class);
     }
 }

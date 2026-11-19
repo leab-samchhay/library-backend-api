@@ -24,7 +24,7 @@ class LoanDetailController extends Controller
 
         return response()->json([
             'data' => $loanDetail->latest()->paginate($request->per_page ?? 10),
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -36,14 +36,14 @@ class LoanDetailController extends Controller
         $validate = $request->validate([
             'loan_id' => 'required|integer|exists:loans,id',
             'book_copy_id' => 'required|integer|exists:book_copies,id',
-            'status' => 'nullable|string|max:255'
+            'status' => 'nullable|string|max:255',
         ]);
 
         $loanDetail = LoanDetail::create($validate);
 
         return response()->json([
             'data' => $loanDetail,
-            'message' => 'create success'
+            'message' => 'create success',
         ]);
     }
 
@@ -56,7 +56,7 @@ class LoanDetailController extends Controller
 
         return response()->json([
             'data' => $loanDetail,
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -70,14 +70,14 @@ class LoanDetailController extends Controller
         $validate = $request->validate([
             'loan_id' => 'required|integer|exists:loans,id',
             'book_copy_id' => 'required|integer|exists:book_copies,id',
-            'status' => 'nullable|string|max:255'
+            'status' => 'nullable|string|max:255',
         ]);
 
         $loanDetail->update($validate);
 
         return response()->json([
             'data' => $loanDetail,
-            'message' => 'update success'
+            'message' => 'update success',
         ]);
     }
 
@@ -90,37 +90,38 @@ class LoanDetailController extends Controller
         $loanDetail->delete();
 
         return response()->json([
-            'message' => 'delete success'
+            'message' => 'delete success',
         ]);
     }
 
+    public function getLateReturns(Request $request)
+    {
+        $lateReturn = LoanDetail::select('loan_details.*')
+            ->join('loans', 'loans.id', '=', 'loan_details.loan_id')
+            ->join('book_returns', 'book_returns.loan_detail_id', '=', 'loan_details.id')
+            ->whereColumn('book_returns.returned_date', '>', 'loans.due_date')
+            ->with(['loan.member', 'bookCopy', 'bookReturn'])
+            ->paginate($request->per_page ?? 10);
 
-    // public function getLateReturns (Request $request){
-    //     $lateReturn = LoanDetail::select('loan_details.*')
-    //     ->join('loans','loans.id', '=', 'loan_details.loan_id')
-    //     ->whereNotNull('loan_details.return_date')
-    //     ->whereColumn('loan_details.return_date', '>', 'loans.due_date')
-    //     ->with(['loan.member', 'bookCopy'])
-    //     ->paginate($request->per_page ?? 10);
+        return response()->json([
+            'data' => $lateReturn,
+            'message' => 'បញ្ជីអ្នកដែលបានសងយឺតថ្ងៃ',
+        ]);
+    }
 
-    //     return response()->json([
-    //         'data' => $lateReturn,
-    //         'message' => 'បញ្ជីអ្នកដែលបានសងយឺតថ្ងៃ'
-    //     ]);
-    // }
+    public function getOverdueLoans(Request $request)
+    {
+        $today = now()->format('Y-m-d');
+        $overdueLoans = LoanDetail::select('loan_details.*')
+            ->join('loans', 'loans.id', '=', 'loan_details.loan_id')
+            ->where('loans.due_date', '<', $today)
+            ->whereDoesntHave('bookReturn')
+            ->with(['loan.member', 'bookCopy'])
+            ->paginate($request->per_page ?? 10);
 
-    // public function getOverdueLoans (Request $request){
-    //     $today = now()->format('Y-m-d');
-    //     $overdueLoans = LoanDetail::select('loan_details.*')
-    //     ->join('loans', 'loans.id', '=', 'loan_details.loan_id')
-    //     ->whereNull('loan_details.return_date')
-    //     ->where('loans.due_date', '<', $today)
-    //     ->with(['loan.member', 'bookCopy'])
-    //     ->paginate($request->per_page ?? 10);
-
-    //     return response()->json([
-    //         'data' => $overdueLoans,
-    //         'message' => 'បញ្ជីអ្នកដែលមិនទាន់សង និងហួសថ្ងៃកំណត់'
-    //     ]);
-    // }
+        return response()->json([
+            'data' => $overdueLoans,
+            'message' => 'បញ្ជីអ្នកដែលមិនទាន់សង និងហួសថ្ងៃកំណត់',
+        ]);
+    }
 }

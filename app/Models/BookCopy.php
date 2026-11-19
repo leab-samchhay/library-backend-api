@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BookCopy extends Model
 {
-    use \Illuminate\Database\Eloquent\SoftDeletes;
+    use SoftDeletes;
 
     protected $fillable = [
         'book_id',
@@ -16,7 +17,7 @@ class BookCopy extends Model
         'acquisition_date',
         'price',
         'condition',
-        'status'
+        'status',
     ];
 
     public function book()

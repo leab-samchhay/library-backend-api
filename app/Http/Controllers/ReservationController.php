@@ -16,13 +16,13 @@ class ReservationController extends Controller
 
         $reservations->when($request->search, function ($q, $search) {
             $q->where(function ($subQuery) use ($search) {
-                $subQuery->whereHas('member', function($query) use ($search) {
-                             $query->where('first_name', 'like', "%{$search}%")
-                                   ->orWhere('last_name', 'like', "%{$search}%")
-                                   ->orWhere('member_code', 'like', "%{$search}%");
-                         })
-                         ->orWhere('status', 'like', "%{$search}%")
-                         ->orWhere('note', 'like', "%{$search}%");
+                $subQuery->whereHas('member', function ($query) use ($search) {
+                    $query->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhere('member_code', 'like', "%{$search}%");
+                })
+                    ->orWhere('status', 'like', "%{$search}%")
+                    ->orWhere('note', 'like', "%{$search}%");
             });
         });
 
@@ -32,7 +32,7 @@ class ReservationController extends Controller
 
         return response()->json([
             'data' => $reservations->latest()->paginate($request->per_page ?? 10),
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -47,14 +47,14 @@ class ReservationController extends Controller
             'reservation_date' => 'required|date',
             'expiry_date' => 'nullable|date|after_or_equal:reservation_date',
             'status' => 'nullable|string|max:255',
-            'note' => 'nullable|string'
+            'note' => 'nullable|string',
         ]);
 
         $reservation = Reservation::create($validate);
 
         return response()->json([
             'data' => $reservation,
-            'message' => 'create success'
+            'message' => 'create success',
         ]);
     }
 
@@ -67,7 +67,7 @@ class ReservationController extends Controller
 
         return response()->json([
             'data' => $reservation,
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -84,14 +84,14 @@ class ReservationController extends Controller
             'reservation_date' => 'required|date',
             'expiry_date' => 'nullable|date|after_or_equal:reservation_date',
             'status' => 'nullable|string|max:255',
-            'note' => 'nullable|string'
+            'note' => 'nullable|string',
         ]);
 
         $reservation->update($validate);
 
         return response()->json([
             'data' => $reservation,
-            'message' => 'update success'
+            'message' => 'update success',
         ]);
     }
 
@@ -104,7 +104,7 @@ class ReservationController extends Controller
         $reservation->delete();
 
         return response()->json([
-            'message' => 'delete success'
+            'message' => 'delete success',
         ]);
     }
 }

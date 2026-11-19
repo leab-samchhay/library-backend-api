@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AuthorBookController;
 use App\Http\Controllers\AuthorsController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BookCopyController;
@@ -20,20 +21,19 @@ use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::middleware('auth:sanctum')->group(function (){
+Route::middleware('auth:sanctum')->group(function () {
 
-    Route::apiResource('category',CategoryController::class);
-    Route::apiResource('authors',AuthorsController::class);
-    Route::apiResource('publishers',PublishersController::class);
-    Route::apiResource('book',BookController::class);
-    Route::apiResource('book-copies',BookCopyController::class);
-    Route::apiResource('members',MemberController::class);
-    Route::apiResource('loans',LoanController::class);
+    Route::apiResource('category', CategoryController::class);
+    Route::apiResource('authors', AuthorsController::class);
+    Route::apiResource('publishers', PublishersController::class);
+    Route::apiResource('book', BookController::class);
+    Route::apiResource('book-copies', BookCopyController::class);
+    Route::apiResource('members', MemberController::class);
+    Route::apiResource('loans', LoanController::class);
     Route::get('loan-details/late-returns', [LoanDetailController::class, 'getLateReturns']);
     Route::get('loan-details/overdue', [LoanDetailController::class, 'getOverdueLoans']);
     Route::apiResource('loan-details', LoanDetailController::class);
@@ -41,15 +41,15 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::apiResource('fines', FinesController::class);
     Route::apiResource('fine-payments', FinePaymentController::class);
     Route::apiResource('reservations', ReservationController::class);
-    Route::apiResource('loanTransaction',LoanTranSactionController::class);
-    Route::apiResource('bookTransaction',BookTransactionController::class);
-    Route::get('report/monthly-borrower',[DashboardController::class, 'monthlyBorrowers']);
-    Route::get('report/getSummary',[DashboardController::class, 'getSummary']);
-    Route::get('report/borrow-by-category',[DashboardController::class, 'getBorrowReportByCategory']);
-    Route::apiResource('author-books', \App\Http\Controllers\AuthorBookController::class);
+    Route::apiResource('loanTransaction', LoanTranSactionController::class);
+    Route::apiResource('bookTransaction', BookTransactionController::class);
+    Route::get('report/monthly-borrower', [DashboardController::class, 'monthlyBorrowers']);
+    Route::get('report/getSummary', [DashboardController::class, 'getSummary']);
+    Route::get('report/borrow-by-category', [DashboardController::class, 'getBorrowReportByCategory']);
+    Route::apiResource('author-books', AuthorBookController::class);
 
-    Route::get('current-user',[AuthController::class, 'currentUser']);
-    Route::post('logout',[AuthController::class, 'logout']);
+    Route::get('current-user', [AuthController::class, 'currentUser']);
+    Route::post('logout', [AuthController::class, 'logout']);
 
     Route::get('/users', [UsersController::class, 'index']);
     Route::get('/users/{id}', [UsersController::class, 'show']);
@@ -59,11 +59,10 @@ Route::middleware('auth:sanctum')->group(function (){
 
 });
 
-Route::post('login',[AuthController::class, 'login']);
+Route::post('login', [AuthController::class, 'login']);
 
 Route::get('/users', [UsersController::class, 'index']);
 Route::get('/users/{id}', [UsersController::class, 'show']);
 Route::post('/users', [UsersController::class, 'store']);
 Route::put('/users/{id}', [UsersController::class, 'update']);
 Route::delete('/users/{id}', [UsersController::class, 'destroy']);
-

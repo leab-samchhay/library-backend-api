@@ -8,14 +8,14 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Reservation extends Model
 {
     use SoftDeletes;
-    
+
     protected $fillable = [
         'member_id',
         'book_copy_id',
         'reservation_date',
         'expiry_date',
         'status',
-        'note'
+        'note',
     ];
 
     public function member()

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BookCopy;
 use App\Models\BookReturn;
+use App\Models\Fines;
+use App\Models\LoanDetail;
 use Illuminate\Http\Request;
 
 class BookReturnController extends Controller
@@ -20,7 +23,7 @@ class BookReturnController extends Controller
 
         return response()->json([
             'data' => $bookReturn->latest()->paginate($request->per_page ?? 10),
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -36,23 +39,23 @@ class BookReturnController extends Controller
             'note' => 'nullable|string',
             'fine_amount' => 'nullable|numeric|min:0',
             'fine_type' => 'nullable|string|max:255',
-            'book_condition' => 'nullable|string|in:Good,Damaged,Lost'
+            'book_condition' => 'nullable|string|in:Good,Damaged,Lost',
         ]);
 
         $bookReturn = BookReturn::create($request->except(['fine_amount', 'fine_type', 'book_condition']));
 
         if ($request->has('fine_amount') && $request->fine_amount > 0) {
-            \App\Models\Fines::create([
+            Fines::create([
                 'return_id' => $bookReturn->id,
                 'fine_type' => $request->fine_type ?? 'Late Return',
                 'amount' => $request->fine_amount,
-                'status' => 'Unpaid'
+                'status' => 'Unpaid',
             ]);
         }
 
-        $loanDetail = \App\Models\LoanDetail::find($request->loan_detail_id);
+        $loanDetail = LoanDetail::find($request->loan_detail_id);
         if ($loanDetail) {
-            $bookCopy = \App\Models\BookCopy::find($loanDetail->book_copy_id);
+            $bookCopy = BookCopy::find($loanDetail->book_copy_id);
             $condition = $request->book_condition ?? 'Good';
 
             if ($condition === 'Lost') {
@@ -74,7 +77,7 @@ class BookReturnController extends Controller
                     $bookCopy->condition = 'Good';
                 }
             }
-            
+
             $loanDetail->save();
             if ($bookCopy) {
                 $bookCopy->save();
@@ -83,7 +86,7 @@ class BookReturnController extends Controller
 
         return response()->json([
             'data' => $bookReturn,
-            'message' => 'create success'
+            'message' => 'create success',
         ]);
     }
 
@@ -96,7 +99,7 @@ class BookReturnController extends Controller
 
         return response()->json([
             'data' => $bookReturn,
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -111,14 +114,14 @@ class BookReturnController extends Controller
             'loan_detail_id' => 'required|integer|exists:loan_details,id',
             'returned_date' => 'required|date',
             'received_by' => 'required|string',
-            'note' => 'nullable|string'
+            'note' => 'nullable|string',
         ]);
 
         $bookReturn->update($validate);
 
         return response()->json([
             'data' => $bookReturn,
-            'message' => 'update success'
+            'message' => 'update success',
         ]);
     }
 
@@ -131,7 +134,7 @@ class BookReturnController extends Controller
         $bookReturn->delete();
 
         return response()->json([
-            'message' => 'delete success'
+            'message' => 'delete success',
         ]);
     }
 }

@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Member extends Model
 {
-    use \Illuminate\Database\Eloquent\SoftDeletes;
+    use SoftDeletes;
 
     protected $fillable = [
         'member_code',
@@ -16,6 +17,6 @@ class Member extends Model
         'date_of_birth',
         'phone',
         'email',
-        'address'
+        'address',
     ];
 }

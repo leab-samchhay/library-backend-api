@@ -13,14 +13,14 @@ class RoleController extends Controller
     public function index(Request $request)
     {
         $role = Role::query();
-        $role->when($request->search,function ($q, $search) {
-            $q->where('name','like','%'.$search.'%');
+        $role->when($request->search, function ($q, $search) {
+            $q->where('name', 'like', '%'.$search.'%');
         });
 
         return response()->json([
             'status' => 'success',
             'data' => $role->latest()->paginate($request->per_page ?? 10),
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -40,33 +40,36 @@ class RoleController extends Controller
         $validate = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'is_active' => 'integer'
+            'is_active' => 'integer',
         ]);
 
-        $role=Role::create($validate);
+        $role = Role::create($validate);
 
         return response()->json([
             'status' => 'success',
             'data' => $role,
-            'message' => 'create success'
+            'message' => 'create success',
         ]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Role $role)
+    public function show($id)
     {
-        //
+        $role = Role::findOrFail($id);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $role,
+            'message' => 'get data success',
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Role $role)
-    {
-
-    }
+    public function edit(Role $role) {}
 
     /**
      * Update the specified resource in storage.
@@ -77,7 +80,7 @@ class RoleController extends Controller
         $validate = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'is_active' => 'integer'
+            'is_active' => 'integer',
         ]);
 
         $role->update($validate);
@@ -85,7 +88,7 @@ class RoleController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $role,
-            'message' => 'update success'
+            'message' => 'update success',
         ]);
     }
 
@@ -96,10 +99,11 @@ class RoleController extends Controller
     {
         $role = Role::findOrFail($id);
         $role->delete();
+
         return response()->json([
             'status' => 'success',
             'data' => $role,
-            'message' => 'delete success'
+            'message' => 'delete success',
         ]);
     }
 }

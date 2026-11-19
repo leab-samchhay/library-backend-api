@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('publishers', function (Blueprint $table) {
             $table->id();
             $table->string('publishers_name');
-            $table->string('phone');
-            $table->string('email');
-            $table->text('address');
-            $table->boolean('status');
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
+            $table->text('address')->nullable();
+            $table->boolean('status')->default(true);
             $table->softDeletes();
             $table->timestamps();
         });

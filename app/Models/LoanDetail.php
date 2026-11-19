@@ -12,7 +12,7 @@ class LoanDetail extends Model
     protected $fillable = [
         'loan_id',
         'book_copy_id',
-        'status'
+        'status',
     ];
 
     public function loan()
@@ -23,5 +23,10 @@ class LoanDetail extends Model
     public function bookCopy()
     {
         return $this->belongsTo(BookCopy::class);
+    }
+
+    public function bookReturn()
+    {
+        return $this->hasOne(BookReturn::class, 'loan_detail_id');
     }
 }

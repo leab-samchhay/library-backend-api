@@ -291,7 +291,22 @@ The application includes a production-ready `Dockerfile` (PHP 8.3 + Apache), con
 docker build -t library-backend-api .
 ```
 
-### 2. Run the Container
+### 2. Run with Docker Compose (Recommended for Production / Server)
+```bash
+cp .env.example .env
+docker compose up -d --build
+docker compose exec app php artisan key:generate --force
+docker compose exec app php artisan migrate --force
+docker compose exec app php artisan db:seed --force
+```
+
+Or run the automated deployment script:
+```bash
+chmod +x deploy.sh
+./deploy.sh
+```
+
+### 3. Run the Container Manually
 ```bash
 docker run -d -p 8000:10000 \
   --name library_api \

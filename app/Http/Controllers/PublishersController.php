@@ -12,14 +12,14 @@ class PublishersController extends Controller
         $publishers = Publishers::query()
             ->when($request->search, function ($q, $search) {
                 $q->where('publishers_name', 'like', "%{$search}%")
-                  ->orWhere('id', $search);
+                    ->orWhere('id', $search);
             })
             ->latest()
             ->paginate($request->per_page ?? 10);
 
         return response()->json([
             'data' => $publishers,
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -37,7 +37,7 @@ class PublishersController extends Controller
 
         return response()->json([
             'data' => $publisher,
-            'message' => 'create success'
+            'message' => 'create success',
         ], 201);
     }
 
@@ -47,7 +47,7 @@ class PublishersController extends Controller
 
         return response()->json([
             'data' => $publisher,
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -67,7 +67,7 @@ class PublishersController extends Controller
 
         return response()->json([
             'data' => $publisher,
-            'message' => 'update success'
+            'message' => 'update success',
         ]);
     }
 
@@ -77,7 +77,7 @@ class PublishersController extends Controller
         $publisher->delete();
 
         return response()->json([
-            'message' => 'delete success'
+            'message' => 'delete success',
         ]);
     }
 }

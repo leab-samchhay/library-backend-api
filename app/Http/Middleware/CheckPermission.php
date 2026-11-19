@@ -16,13 +16,13 @@ class CheckPermission
     public function handle(Request $request, Closure $next, ?string $permission = null): Response
     {
         $user = $request->user();
-        if (!$user) {
+        if (! $user) {
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
-        if (!$permission) {
+        if (! $permission) {
             $routeName = $request->route()->getName();
-            
+
             if ($routeName) {
                 $routeMap = [
                     'author-books' => 'author_books',
@@ -40,9 +40,9 @@ class CheckPermission
                     'members' => 'member',
                     'publishers' => 'publishers',
                     'users' => 'users',
-                    'dashboard' => 'dashboard'
+                    'dashboard' => 'dashboard',
                 ];
-                
+
                 $actionMap = [
                     'index' => 'view',
                     'show' => 'view',
@@ -50,14 +50,14 @@ class CheckPermission
                     'update' => 'edit',
                     'destroy' => 'delete',
                 ];
-                
+
                 $parts = explode('.', $routeName);
                 if (count($parts) >= 2) {
                     $action = array_pop($parts);
                     $module = implode('.', $parts);
-                    
+
                     if (isset($routeMap[$module]) && isset($actionMap[$action])) {
-                        $permission = $routeMap[$module] . '.' . $actionMap[$action];
+                        $permission = $routeMap[$module].'.'.$actionMap[$action];
                     }
                 }
             }
@@ -72,15 +72,15 @@ class CheckPermission
             'category.view',
             'authors.view',
             'publishers.view',
-            'fines.view'
+            'fines.view',
         ];
 
         if ($permission && in_array($permission, $alwaysAllowView)) {
             return $next($request);
         }
 
-        if ($permission && !$user->hasPermission($permission)) {
-            return response()->json(['message' => 'Forbidden - You do not have permission to perform this action. (' . $permission . ')'], 403);
+        if ($permission && ! $user->hasPermission($permission)) {
+            return response()->json(['message' => 'Forbidden - You do not have permission to perform this action. ('.$permission.')'], 403);
         }
 
         return $next($request);

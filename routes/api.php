@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\AbaPaywayController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AuthorBookController;
 use App\Http\Controllers\AuthorsController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\BookCopyController;
@@ -14,6 +16,7 @@ use App\Http\Controllers\LoanController;
 use App\Http\Controllers\LoanDetailController;
 use App\Http\Controllers\LoanTranSactionController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PublishersController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoleController;
@@ -22,20 +25,19 @@ use App\Http\Controllers\UsersController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::middleware(['auth:sanctum', 'permission'])->group(function (){
+Route::middleware(['auth:sanctum', 'permission'])->group(function () {
 
     // Route::apiResource('category',CategoryController::class);
-    Route::apiResource('authors',AuthorsController::class);
-    Route::apiResource('publishers',PublishersController::class);
-    Route::apiResource('book',BookController::class);
-    Route::apiResource('book-copies',BookCopyController::class);
-    Route::apiResource('members',MemberController::class);
-    Route::apiResource('loans',LoanController::class);
+    Route::apiResource('authors', AuthorsController::class);
+    Route::apiResource('publishers', PublishersController::class);
+    Route::apiResource('book', BookController::class);
+    Route::apiResource('book-copies', BookCopyController::class);
+    Route::apiResource('members', MemberController::class);
+    Route::apiResource('loans', LoanController::class);
     Route::get('loan-details/late-returns', [LoanDetailController::class, 'getLateReturns']);
     Route::get('loan-details/overdue', [LoanDetailController::class, 'getOverdueLoans']);
     Route::apiResource('loan-details', LoanDetailController::class);
@@ -43,44 +45,30 @@ Route::middleware(['auth:sanctum', 'permission'])->group(function (){
     Route::apiResource('fines', FinesController::class);
     Route::apiResource('fine-payments', FinePaymentController::class);
     Route::apiResource('reservations', ReservationController::class);
-    Route::apiResource('loanTransaction',LoanTranSactionController::class);
-    Route::apiResource('bookTransaction',BookTransactionController::class);
-    Route::get('report/monthly-borrower',[DashboardController::class, 'monthlyBorrowers'])->middleware('permission:dashboard.view');
-    Route::get('report/getSummary',[DashboardController::class, 'getSummary'])->middleware('permission:dashboard.view');
-    Route::get('report/borrow-by-category',[DashboardController::class, 'getBorrowReportByCategory'])->middleware('permission:dashboard.view');
-    Route::apiResource('author-books', \App\Http\Controllers\AuthorBookController::class);
+    Route::apiResource('loanTransaction', LoanTranSactionController::class)->only(['store']);
+    Route::apiResource('bookTransaction', BookTransactionController::class)->only(['store', 'update']);
+    Route::get('report/monthly-borrower', [DashboardController::class, 'monthlyBorrowers'])->middleware('permission:dashboard.view');
+    Route::get('report/getSummary', [DashboardController::class, 'getSummary'])->middleware('permission:dashboard.view');
+    Route::get('report/borrow-by-category', [DashboardController::class, 'getBorrowReportByCategory'])->middleware('permission:dashboard.view');
+    Route::apiResource('author-books', AuthorBookController::class);
 
-    Route::get('current-user',[AuthController::class, 'currentUser']);
-    Route::post('logout',[AuthController::class, 'logout']);
+    Route::get('current-user', [AuthController::class, 'currentUser']);
+    Route::post('logout', [AuthController::class, 'logout']);
 
     // ABA PayWay / KHQR payment routes
-    Route::post('aba/create-payment', [\App\Http\Controllers\AbaPaywayController::class, 'createQrPayment']);
-    Route::post('aba/check-transaction', [\App\Http\Controllers\AbaPaywayController::class, 'checkTransaction']);
+    Route::post('aba/create-payment', [AbaPaywayController::class, 'createQrPayment']);
+    Route::post('aba/check-transaction', [AbaPaywayController::class, 'checkTransaction']);
 
-    Route::get('/users', [UsersController::class, 'index']);
-    Route::get('/users/{id}', [UsersController::class, 'show']);
-    Route::post('/users', [UsersController::class, 'store']);
-    Route::put('/users/{id}', [UsersController::class, 'update']);
-    Route::delete('/users/{id}', [UsersController::class, 'destroy']);
+    Route::apiResource('users', UsersController::class);
 
-    Route::get('permissions', [\App\Http\Controllers\PermissionController::class, 'index']);
-    Route::get('users/{userId}/permissions', [\App\Http\Controllers\PermissionController::class, 'getUserPermissions']);
-    Route::post('users/{userId}/permissions', [\App\Http\Controllers\PermissionController::class, 'assignToUser']);
+    Route::get('permissions', [PermissionController::class, 'index']);
+    Route::get('users/{userId}/permissions', [PermissionController::class, 'getUserPermissions']);
+    Route::post('users/{userId}/permissions', [PermissionController::class, 'assignToUser']);
 
-    Route::get('/users', [UsersController::class, 'index']);
-    Route::get('/users/{id}', [UsersController::class, 'show']);
-    Route::post('/users', [UsersController::class, 'store']);
-    Route::put('/users/{id}', [UsersController::class, 'update']);
-    Route::delete('/users/{id}', [UsersController::class, 'destroy']);
-
-    Route::apiResource('role',RoleController::class);
+    Route::apiResource('role', RoleController::class);
 
 });
 
-Route::post('login',[AuthController::class, 'login']);
-Route::apiResource('role',RoleController::class);
-Route::apiResource('user-roles',UserRolesController::class);
-Route::apiResource('category',CategoryController::class);
-
-
-
+Route::post('login', [AuthController::class, 'login']);
+Route::apiResource('user-roles', UserRolesController::class);
+Route::apiResource('category', CategoryController::class);

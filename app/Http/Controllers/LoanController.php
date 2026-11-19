@@ -16,10 +16,10 @@ class LoanController extends Controller
 
         $loan->when($request->search, function ($q, $search) {
             $q->where(function ($subQuery) use ($search) {
-                $subQuery->whereHas('member', function($query) use ($search) {
+                $subQuery->whereHas('member', function ($query) use ($search) {
                     $query->where('member_code', $search)
-                          ->orWhere('first_name', 'like', "%{$search}%")
-                          ->orWhere('last_name', 'like', "%{$search}%");
+                        ->orWhere('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%");
                 });
             });
         });
@@ -30,7 +30,7 @@ class LoanController extends Controller
 
         return response()->json([
             'data' => $loan->latest()->paginate($request->per_page ?? 10),
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -45,14 +45,14 @@ class LoanController extends Controller
             'loan_date' => 'required|date',
             'due_date' => 'required|date|after_or_equal:loan_date',
             'note' => 'nullable|string',
-            'status' => 'nullable|string|max:255'
+            'status' => 'nullable|string|max:255',
         ]);
 
         $loan = Loan::create($validate);
 
         return response()->json([
             'data' => $loan,
-            'message' => 'create success'
+            'message' => 'create success',
         ]);
     }
 
@@ -65,7 +65,7 @@ class LoanController extends Controller
 
         return response()->json([
             'data' => $loan,
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -82,14 +82,14 @@ class LoanController extends Controller
             'loan_date' => 'required|date',
             'due_date' => 'required|date|after_or_equal:loan_date',
             'note' => 'nullable|string',
-            'status' => 'nullable|string|max:255'
+            'status' => 'nullable|string|max:255',
         ]);
 
         $loan->update($validate);
 
         return response()->json([
             'data' => $loan,
-            'message' => 'update success'
+            'message' => 'update success',
         ]);
     }
 
@@ -102,7 +102,7 @@ class LoanController extends Controller
         $loan->delete();
 
         return response()->json([
-            'message' => 'delete success'
+            'message' => 'delete success',
         ]);
     }
 }

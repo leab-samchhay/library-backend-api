@@ -13,12 +13,11 @@ class BookReturn extends Model
         'loan_detail_id',
         'returned_date',
         'received_by',
-        'note'
+        'note',
     ];
 
     public function loanDetail()
     {
         return $this->belongsTo(LoanDetail::class);
     }
-
 }

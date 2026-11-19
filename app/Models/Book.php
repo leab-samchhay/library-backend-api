@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Book extends Model
 {
     use SoftDeletes;
+
     protected $fillable = [
         'category_id',
         'publishers_id',
@@ -18,15 +19,19 @@ class Book extends Model
         'publication_year',
         'language',
         'qty',
-        'status'
+        'status',
     ];
 
-    public function category(){
+    public function category()
+    {
         return $this->belongsTo(Category::class);
     }
-    public function publishers(){
+
+    public function publishers()
+    {
         return $this->belongsTo(Publishers::class);
     }
+
     public function copies()
     {
         return $this->hasMany(BookCopy::class, 'book_id', 'id');

@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Loan extends Model
 {
-    use \Illuminate\Database\Eloquent\SoftDeletes;
+    use SoftDeletes;
 
     protected $fillable = [
         'member_id',
@@ -14,7 +15,7 @@ class Loan extends Model
         'loan_date',
         'due_date',
         'note',
-        'status'
+        'status',
     ];
 
     public function member()
@@ -26,5 +27,4 @@ class Loan extends Model
     {
         return $this->hasMany(LoanDetail::class, 'loan_id');
     }
-
 }

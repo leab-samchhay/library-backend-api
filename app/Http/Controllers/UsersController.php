@@ -14,23 +14,24 @@ class UsersController extends Controller
         $query = User::query();
 
         if ($request->has('search') && $request->search != '') {
-            $query->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%')
+                ->orWhere('email', 'like', '%'.$request->search.'%');
         }
 
         $perPage = $request->input('per_page', 10);
         $users = $query->paginate($perPage);
 
         return response()->json([
-            'data' => $users
+            'data' => $users,
         ]);
     }
 
     public function show($id)
     {
         $user = User::findOrFail($id);
+
         return response()->json([
-            'user' => $user
+            'user' => $user,
         ]);
     }
 
@@ -61,7 +62,7 @@ class UsersController extends Controller
 
         return response()->json([
             'message' => 'User created successfully',
-            'user' => $user
+            'user' => $user,
         ], 201);
     }
 
@@ -71,16 +72,26 @@ class UsersController extends Controller
 
         $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:8',
             'profile' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        if ($request->has('name')) $user->name = $request->name;
-        if ($request->has('email')) $user->email = $request->email;
-        if ($request->filled('password')) $user->password = Hash::make($request->password);
-        if ($request->has('role')) $user->role = $request->role;
-        if ($request->has('status')) $user->status = filter_var($request->status, FILTER_VALIDATE_BOOLEAN);
+        if ($request->has('name')) {
+            $user->name = $request->name;
+        }
+        if ($request->has('email')) {
+            $user->email = $request->email;
+        }
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+        if ($request->has('role')) {
+            $user->role = $request->role;
+        }
+        if ($request->has('status')) {
+            $user->status = filter_var($request->status, FILTER_VALIDATE_BOOLEAN);
+        }
 
         if ($request->hasFile('profile')) {
             if ($user->profile) {
@@ -94,7 +105,7 @@ class UsersController extends Controller
 
         return response()->json([
             'message' => 'User updated successfully',
-            'user' => $user
+            'user' => $user,
         ]);
     }
 
@@ -109,7 +120,7 @@ class UsersController extends Controller
         $user->delete();
 
         return response()->json([
-            'message' => 'User deleted successfully'
+            'message' => 'User deleted successfully',
         ]);
     }
 }

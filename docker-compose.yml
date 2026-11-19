@@ -1,0 +1,57 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: library_backend_api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${APP_PORT:-8000}:10000"
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - APP_DEBUG=${APP_DEBUG:-false}
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      # រក្សាទុក Uploads និង Logs មិនឱ្យបាត់បង់ពេល Rebuild Container
+      - app_storage:/var/www/html/storage
+      # Mount .env ចូលទៅក្នុង Container
+      - ./.env:/var/www/html/.env
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - library_network
+
+  db:
+    image: mysql:8.0
+    container_name: library_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-library_db}
+      MYSQL_USER: ${DB_USERNAME:-library_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_secret}
+    ports:
+      - "127.0.0.1:${DB_PORT:-3306}:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u$$MYSQL_USER -p$$MYSQL_PASSWORD || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - library_network
+
+volumes:
+  app_storage:
+    driver: local
+  db_data:
+    driver: local
+
+networks:
+  library_network:
+    driver: bridge

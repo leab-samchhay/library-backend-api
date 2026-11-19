@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('return_id')->constrained('book_returns')->cascadeOnDelete();
             $table->string('fine_type')->nullable();
-            $table->decimal('amount',18,2);
+            $table->decimal('amount', 18, 2);
             $table->string('status')->nullable();
             $table->softDeletes();
             $table->timestamps();

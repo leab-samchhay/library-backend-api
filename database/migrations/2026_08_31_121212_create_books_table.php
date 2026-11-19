@@ -16,12 +16,12 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->foreignId('publishers_id')->constrained()->cascadeOnDelete();
             $table->string('isbn');
-            $table->string('image');
-            $table->text('description');
-            $table->year('publication_year');
-            $table->string('language');
-            $table->integer('qty');
-            $table->boolean('status');
+            $table->string('image')->nullable();
+            $table->text('description')->nullable();
+            $table->year('publication_year')->nullable();
+            $table->string('language')->nullable();
+            $table->integer('qty')->default(0);
+            $table->boolean('status')->default(true);
             $table->softDeletes();
             $table->timestamps();
         });

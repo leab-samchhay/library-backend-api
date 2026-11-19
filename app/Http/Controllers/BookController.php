@@ -13,11 +13,11 @@ class BookController extends Controller
      */
     public function index(Request $request)
     {
-        $book = Book::with('category','publishers');
-        $book->when($request->search,function ($q, $search) {
+        $book = Book::with('category', 'publishers');
+        $book->when($request->search, function ($q, $search) {
             $q->where(function ($subQuery) use ($search) {
                 $subQuery->where('isbn', 'like', "%{$search}%")
-                         ->orWhere('title', 'like', "%{$search}%");
+                    ->orWhere('title', 'like', "%{$search}%");
             });
         });
 
@@ -26,8 +26,8 @@ class BookController extends Controller
         });
 
         return response()->json([
-            'data'=>$book->latest()->paginate($request->per_page ?? 10),
-            'message'=>'get data success'
+            'data' => $book->latest()->paginate($request->per_page ?? 10),
+            'message' => 'get data success',
         ]);
 
     }
@@ -45,9 +45,9 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        $validate=$request->validate([
-            'category_id'=> 'required|integer|exists:categories,id',
-            'publishers_id'=> 'required|integer|exists:publishers,id',
+        $validate = $request->validate([
+            'category_id' => 'required|integer|exists:categories,id',
+            'publishers_id' => 'required|integer|exists:publishers,id',
             'title' => 'required|string|max:255',
             'isbn' => 'required|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,giv,svg|max:2048',
@@ -55,19 +55,19 @@ class BookController extends Controller
             'publication_year' => 'nullable|integer',
             'language' => 'nullable|string',
             'qty' => 'required|integer',
-            'status' => 'boolean'
+            'status' => 'boolean',
         ]);
 
-        if($request->hasFile('image')){
-            $path = $request->file('image')->store('book','public');
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('book', 'public');
             $validate['image'] = $path;
         }
 
         $book = Book::create($validate);
 
-        return response() ->json([
-            'data'=>$book,
-            'message' => 'create success'
+        return response()->json([
+            'data' => $book,
+            'message' => 'create success',
         ]);
     }
 
@@ -77,9 +77,10 @@ class BookController extends Controller
     public function show($id)
     {
         $book = Book::findOrFail($id);
+
         return response()->json([
             'data' => $book,
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -97,9 +98,9 @@ class BookController extends Controller
     public function update(Request $request, $id)
     {
         $book = Book::findOrFail($id);
-        $validate=$request->validate([
-            'category_id'=> 'required|integer|exists:categories,id',
-            'publishers_id'=> 'required|integer|exists:publishers,id',
+        $validate = $request->validate([
+            'category_id' => 'required|integer|exists:categories,id',
+            'publishers_id' => 'required|integer|exists:publishers,id',
             'title' => 'required|string|max:255',
             'isbn' => 'required|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,giv,svg|max:2048',
@@ -107,14 +108,14 @@ class BookController extends Controller
             'publication_year' => 'nullable|integer',
             'language' => 'nullable|string',
             'qty' => 'required|integer',
-            'status' => 'boolean'
+            'status' => 'boolean',
         ]);
 
-        if($request->hasFile('image')){
-            if($book->image){
+        if ($request->hasFile('image')) {
+            if ($book->image) {
                 Storage::disk('public')->delete($book->image);
             }
-            $path = $request->file('image')->store('book','public');
+            $path = $request->file('image')->store('book', 'public');
             $validate['image'] = $path;
         } else {
             unset($validate['image']);
@@ -122,9 +123,9 @@ class BookController extends Controller
 
         $book->update($validate);
 
-        return response() ->json([
-            'data'=>$book,
-            'message' => 'create success'
+        return response()->json([
+            'data' => $book,
+            'message' => 'create success',
         ]);
     }
 
@@ -137,7 +138,7 @@ class BookController extends Controller
         $book->delete();
 
         return response()->json([
-            'message' => 'delete success'
+            'message' => 'delete success',
         ]);
     }
 }

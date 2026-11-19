@@ -12,12 +12,12 @@ class UserRolesController extends Controller
      */
     public function index()
     {
-        $user_role = UserRoles::with('user','role')->get();
+        $user_role = UserRoles::with('user', 'role')->get();
 
         return response()->json([
             'status' => 'success',
             'data' => $user_role,
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -36,7 +36,7 @@ class UserRolesController extends Controller
     {
         $validate = $request->validate([
             'user_id' => 'required|integer|exists:users,id',
-            'role_id' => 'required|integer|exists:roles,id'
+            'role_id' => 'required|integer|exists:roles,id',
         ]);
 
         $user_role = UserRoles::create($validate);
@@ -44,7 +44,7 @@ class UserRolesController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $user_role,
-            'message' => 'creat success'
+            'message' => 'creat success',
         ]);
     }
 
@@ -72,7 +72,7 @@ class UserRolesController extends Controller
         $user_role = UserRoles::findOrFail($id);
         $validate = $request->validate([
             'user_id' => 'required|integer|exists:users,id',
-            'role_id' => 'required|integer|exists:roles,id'
+            'role_id' => 'required|integer|exists:roles,id',
         ]);
 
         $user_role->update($validate);
@@ -80,7 +80,7 @@ class UserRolesController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $user_role,
-            'message' => 'update success'
+            'message' => 'update success',
         ]);
     }
 
@@ -95,7 +95,7 @@ class UserRolesController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $user_role,
-            'message' => 'delete success'
+            'message' => 'delete success',
         ]);
     }
 }

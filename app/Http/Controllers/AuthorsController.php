@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Authors;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AuthorsController extends Controller
 {
@@ -16,13 +15,13 @@ class AuthorsController extends Controller
         $authors = Authors::query();
         $authors->when($request->search, function ($q, $search) {
             $q->where(function ($subQuery) use ($search) {
-                $subQuery->where('authors_name', 'like', '%' .$search. '%');
+                $subQuery->where('authors_name', 'like', '%'.$search.'%');
             });
         });
 
-        return response() -> json([
+        return response()->json([
             'data' => $authors->latest()->paginate($request->per_page ?? 10),
-            'message' => "get data success"
+            'message' => 'get data success',
         ]);
     }
 
@@ -41,14 +40,14 @@ class AuthorsController extends Controller
     {
         $validate = $request->validate([
             'authors_name' => 'required|string|max:255',
-            'biography' => 'nullable|string'
+            'biography' => 'nullable|string',
         ]);
 
         $authors = Authors::create($validate);
 
-        return response() -> json([
+        return response()->json([
             'data' => $authors,
-            'message' => 'crate success'
+            'message' => 'crate success',
         ]);
     }
 
@@ -58,9 +57,10 @@ class AuthorsController extends Controller
     public function show($id)
     {
         $authors = Authors::findOrFail($id);
+
         return response()->json([
-            'data'=>$authors,
-            'message' => 'get data success'
+            'data' => $authors,
+            'message' => 'get data success',
         ]);
     }
 
@@ -80,14 +80,14 @@ class AuthorsController extends Controller
         $authors = Authors::findOrFail($id);
         $validate = $request->validate([
             'authors_name' => 'required|string|max:255',
-            'biography' => 'string'
+            'biography' => 'nullable|string',
         ]);
 
         $authors->update($validate);
 
-        return response() -> json([
+        return response()->json([
             'data' => $authors,
-            'message' => 'update success'
+            'message' => 'update success',
         ]);
     }
 
@@ -98,8 +98,9 @@ class AuthorsController extends Controller
     {
         $authors = Authors::findOrFail($id);
         $authors->delete();
-        return response() ->json([
-            'message' => 'delete success'
+
+        return response()->json([
+            'message' => 'delete success',
         ]);
     }
 }

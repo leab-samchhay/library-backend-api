@@ -19,7 +19,7 @@ class CategoryFactory extends Factory
     {
         return [
             'category_name' => fake()->word(),
-            'description' =>fake()->text()
+            'description' => fake()->text(),
         ];
     }
 }

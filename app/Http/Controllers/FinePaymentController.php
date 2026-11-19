@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\FinePayment;
+use App\Models\Fines;
 use Illuminate\Http\Request;
 
 class FinePaymentController extends Controller
@@ -17,17 +18,17 @@ class FinePaymentController extends Controller
         $payments->when($request->search, function ($q, $search) {
             $q->where(function ($subQuery) use ($search) {
                 $subQuery->where('payment_method', 'like', "%{$search}%")
-                         ->orWhere('amount', 'like', "%{$search}%")
-                         ->orWhere('received_by', 'like', "%{$search}%")
-                         ->orWhereHas('fine', function($query) use ($search) {
-                            $query->where('fine_type', 'like', "%{$search}%");
-                         });
+                    ->orWhere('amount', 'like', "%{$search}%")
+                    ->orWhere('received_by', 'like', "%{$search}%")
+                    ->orWhereHas('fine', function ($query) use ($search) {
+                        $query->where('fine_type', 'like', "%{$search}%");
+                    });
             });
         });
 
         return response()->json([
             'data' => $payments->latest()->paginate($request->per_page ?? 10),
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -42,13 +43,13 @@ class FinePaymentController extends Controller
             'payment_date' => 'required|date',
             'payment_method' => 'nullable|string|max:255',
             'received_by' => 'nullable|string|max:255',
-            'note' => 'nullable|string'
+            'note' => 'nullable|string',
         ]);
 
         $payment = FinePayment::create($validate);
 
-        $fine = \App\Models\Fines::findOrFail($request->fine_id);
-        $totalPaid = \App\Models\FinePayment::where('fine_id', $fine->id)->sum('amount');
+        $fine = Fines::findOrFail($request->fine_id);
+        $totalPaid = FinePayment::where('fine_id', $fine->id)->sum('amount');
         if ($totalPaid >= $fine->amount) {
             $fine->update(['status' => 'Paid']);
         } else {
@@ -57,7 +58,7 @@ class FinePaymentController extends Controller
 
         return response()->json([
             'data' => $payment,
-            'message' => 'create success'
+            'message' => 'create success',
         ]);
     }
 
@@ -70,7 +71,7 @@ class FinePaymentController extends Controller
 
         return response()->json([
             'data' => $payment,
-            'message' => 'get data success'
+            'message' => 'get data success',
         ]);
     }
 
@@ -87,13 +88,13 @@ class FinePaymentController extends Controller
             'payment_date' => 'required|date',
             'payment_method' => 'nullable|string|max:255',
             'received_by' => 'nullable|string|max:255',
-            'note' => 'nullable|string'
+            'note' => 'nullable|string',
         ]);
 
         $payment->update($validate);
 
-        $fine = \App\Models\Fines::findOrFail($request->fine_id);
-        $totalPaid = \App\Models\FinePayment::where('fine_id', $fine->id)->sum('amount');
+        $fine = Fines::findOrFail($request->fine_id);
+        $totalPaid = FinePayment::where('fine_id', $fine->id)->sum('amount');
         if ($totalPaid >= $fine->amount) {
             $fine->update(['status' => 'Paid']);
         } else {
@@ -102,7 +103,7 @@ class FinePaymentController extends Controller
 
         return response()->json([
             'data' => $payment,
-            'message' => 'update success'
+            'message' => 'update success',
         ]);
     }
 
@@ -115,8 +116,8 @@ class FinePaymentController extends Controller
         $fineId = $payment->fine_id;
         $payment->delete();
 
-        $fine = \App\Models\Fines::findOrFail($fineId);
-        $totalPaid = \App\Models\FinePayment::where('fine_id', $fine->id)->sum('amount');
+        $fine = Fines::findOrFail($fineId);
+        $totalPaid = FinePayment::where('fine_id', $fine->id)->sum('amount');
         if ($totalPaid >= $fine->amount) {
             $fine->update(['status' => 'Paid']);
         } else {
@@ -124,7 +125,7 @@ class FinePaymentController extends Controller
         }
 
         return response()->json([
-            'message' => 'delete success'
+            'message' => 'delete success',
         ]);
     }
 }
